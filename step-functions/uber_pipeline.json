@@ -1,0 +1,29 @@
+{
+  "StartAt": "BronzeToSilver",
+  "States": {
+    "BronzeToSilver": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Parameters": {
+        "JobName": "bronze-to-silver-trips"
+      },
+      "Next": "SilverToGold"
+    },
+    "SilverToGold": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Parameters": {
+        "JobName": "silver-to-gold-fact-trips"
+      },
+      "Next": "LoadRedshift"
+    },
+    "LoadRedshift": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "load-redshift"
+      },
+      "End": true
+    }
+  }
+}
